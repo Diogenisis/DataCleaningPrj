@@ -1,0 +1,48 @@
+run_analysis.R 
+==============
+
+This program takes the folder structure "UCI HAR Dataset" as created by unzipping "UCI HAR Dataset.zip”,
+a data set used for “Human Activity Recognition Using Smartphones” downloaded from 
+
+       "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+
+and creates a “tidy” dataset of the averages of the standard deviations and means per subject, activity, and measure and writes it to “X_tidy_Avg_of_Means_and_Stds.csv”.
+
+For more structure and background of the orginal data sets please see the documentation contained in 
+	"https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+and also 
+	“http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones”
+
+
+The program performs the following analysis steps:
+--------------------------------------------------
+
+A) As the original data set is used for machine learning it is divided into a training and a test data set
+we first combine these data sets into one each for observations (X), subjects, and activity labels/ordinals (y)
+
+B) We then use the mapping of activity ordinal to a descriptive text describing the activity as contained 
+   in "activity_labels.txt" to replace the activity label listed in y by the activity name.
+
+C) We then read in the table “features.txt” mapping the feature (measure) number to descriptive names.
+   This table has one row for each column in the X data set, the row number in “features.txt” corresponding
+   to the column number in X
+
+D) We extract the "relevant" features, i.e. the means and standard deviations assuming that this means
+any feature containing either "mean()" or "std()" anywhere in the feature name resulting in 66 features;
+and we replace "funny" characters which might cause issues when used in a programming context:
+  1. "(" and ")" are deleted 
+  2. "-" and "," are replace by "_" 
+
+
+E) We now set the labels of the corresponding columns to their modified feature names
+   and keep only the columns with the relevant features
+
+F) Now we add columns for subject and activity (vector y) to the left of table X
+   and label them “Subject” and “Activity”, creating a tidy albeit wide data set 
+   which we save to "X_tidy_Means_and_Stds.csv" just incase...
+
+G) Now we melt X into a skinny data set by making the relevant feature (measure) type into a variable 
+
+H) Finally use sqldf to calculate the average of each relevant feature per activity per subject
+   and write the result to "X_tidy_Avg_of_Means_and_Stds.csv" in the current working directory
+
